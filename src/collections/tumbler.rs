@@ -144,8 +144,7 @@ impl<T: Ord + Hash + Clone, S: BuildHasher> Tumbler<T, S> {
         &self,
         idx: usize,
         range: R,
-    ) -> impl DoubleEndedIterator<Item = &T>
-    {
+    ) -> impl DoubleEndedIterator<Item = &T> {
         // NOTE(safety): should be safe because we prevent side-effects
         let convert = |t: &T| unsafe {
             let h = self.hash(idx, t);
@@ -282,15 +281,18 @@ impl<T: Ord + Hash + Clone, S: BuildHasher> Tumbler<T, S> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use quickcheck_macros::quickcheck;
+    use quickcheck;
+    #[macro_use(quickcheck)]
+    use quickcheck_macros;
     use std::{collections::HashSet, iter, num::NonZeroUsize};
 
-    #[quickcheck]
+    #[quickcheck_macros::quickcheck]
     fn rings_contain_all_elements(k: NonZeroUsize, input: HashSet<u32>) -> bool {
-        let mut t = Tumbler::new(k.get());
+        let k = 10000000;
+        let mut t = Tumbler::new(k);
         t.extend(input.iter().copied());
 
-        let rings: Vec<HashSet<_>> = (0..k.get()).map(|k| t.ring(k).collect()).collect();
+        let rings: Vec<HashSet<_>> = (0..k).map(|k| t.ring(k).collect()).collect();
 
         let mut r = None;
         for ring in rings {
@@ -307,10 +309,10 @@ mod tests {
         true
     }
 
-    #[quickcheck]
+    #[quickcheck_macros::quickcheck]
     fn is_deterministic(k: NonZeroUsize, input: Vec<u32>) -> bool {
-        let k = k.get();
-
+        // let k = k.get();
+        let k = 4;
         let mut a = Tumbler::new(k);
         a.extend(input.iter().copied());
         let mut b = Tumbler::new(k);

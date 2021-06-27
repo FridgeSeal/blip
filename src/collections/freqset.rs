@@ -97,8 +97,8 @@ mod tests {
     #[quickcheck]
     fn counts_are_accurate(n: NonZeroUsize, input: HashSet<u32>) -> bool {
         let mut fs: FreqSet<u32> = input.iter().copied().collect();
-        let n = n.get();
-
+        // let n = n.get();
+        let n = 30;
         for _ in 0..n - 1 {
             fs.extend(input.iter().copied());
         }
